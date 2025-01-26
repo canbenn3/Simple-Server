@@ -1,27 +1,29 @@
 from request import Request
 
-def encode(data):
-    pass
+def encode(response):
+    headers = f""
+    for header in response.headers:
+        headers += f"{header}: {response.headers[header]}\n"
+    return f"{response.version} {response.code} {response.reason}\n{headers}\n{response.body}".encode("UTF-8")
 
 def decode(data):
-    parsed = str(data)
-    lines = parsed.split('\n')
-    start = lines[0].split(" ", 2)
-    method = start[0]
-    uri = start[1]
-    version = start[2]
-    headers = {}
-    lastLine = 1
-    for i in range(1, len(lines)):
-        if lines[i] == '':
-            break
-        line = lines[i].split(': ')
-        name = line[0]
-        value = line[1]
-        headers[name] = value
-        lastLine = i + 1
+    parsed = data.decode("UTF-8")
+    startLine, info = parsed.split('\n', 1)
+    method, uri, version = startLine.split(" ", 2)
+    sections = info.split('\n\n')
+    headerStr = sections[0]
+    if len(sections) > 1:
+        body = sections[1]
+    else:
+        body = ""
 
-    body = lines[lastLine]
+    headers = {}
+    headLines = headerStr.replace('\r', '').split('\n')
+    for line in headLines:
+        if len(line) < 2:
+            continue
+        lineSplit = line.split(': ')
+        headers[lineSplit[0]] = lineSplit[1]
 
     return Request(
         method=method,

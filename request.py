@@ -12,3 +12,10 @@ class Request:
         self.version = version
         self.body = body
         self.headers = headers
+
+    def toString(self):
+        headers = f""
+        for header in self.headers:
+            headers += f"{header}: {self.headers[header]}\n"
+
+        return f"{self.method} {self.uri} {self.version}\n{headers}\n{self.body}"
