@@ -1,7 +1,13 @@
-from endpoints import home
+from endpoints import home, notFound, about, experience, projects
 
 def router(req):
-    print("inside router!!!")
-    print(f"req:\n{req.toString()}")
-    if req.uri == '/index.html' or req.uri == '/':
+    if req.uri == '/':
         return home()
+    elif req.uri == '/about':
+        return about()
+    elif req.uri == '/experience':
+        return experience()
+    elif req.uri == '/projects':
+        return projects()
+    else:
+        return notFound()

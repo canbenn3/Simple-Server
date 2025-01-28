@@ -1,6 +1,6 @@
 import socket
 from encoder import encode, decode
-from middleware import headerMiddlewareFactory, loggingMiddlewareFactory
+from middleware import headerMiddlewareFactory, loggingMiddlewareFactory, staticMiddlewareFactory
 from router import router
 
 PORT = 8000
@@ -18,5 +18,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             request = decode(data)
             middlewareChain = loggingMiddlewareFactory(router)
             middlewareChain = headerMiddlewareFactory(middlewareChain)
+            middlewareChain = staticMiddlewareFactory(middlewareChain)
             responseBytes = encode(middlewareChain(req=request))
             conn.sendall(responseBytes)

@@ -1,11 +1,41 @@
 from datetime import datetime
+from response import Response
+
 def loggingMiddlewareFactory(nextMidware):
     def middleware(req):
         print(f"Request Method: {req.method}, Path: {req.uri}")
         res = nextMidware(req)
-        print(f"res:\n{res}")
         print(f"Response Code: {res.code}, Reason: {res.reason}")
         return res
+    return middleware
+
+def staticMiddlewareFactory(nextMidware):
+    def middleware(req):
+        print(f"inside staticMiddlewareFactory; req.uri: {req.uri}")
+        if req.uri.startswith('/static/'):
+            print("\n\n\nA static file was requested\n\n\n")
+            try:
+                with open(f".{req.uri}", 'r') as f:
+                    body = f.read()
+                    return Response(
+                        version='HTTP1.1',
+                        code=200,
+                        reason='found',
+                        headers={},
+                        body=body
+                    )
+            except FileNotFoundError:
+                body = "404 Not Found"
+                return Response(
+                    version='HTTP1.1',
+                    code=404,
+                    reason='Not Found',
+                    headers={},
+                    body=body
+                )
+        else:
+            return nextMidware(req)
+
     return middleware
 
 def headerMiddlewareFactory(nextMidware):
