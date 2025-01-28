@@ -5,15 +5,13 @@ def loggingMiddlewareFactory(nextMidware):
     def middleware(req):
         print(f"Request Method: {req.method}, Path: {req.uri}")
         res = nextMidware(req)
-        print(f"Response Code: {res.code}, Reason: {res.reason}")
+        print(f"Response URI: {req.uri} Code: {res.code}, Reason: {res.reason}")
         return res
     return middleware
 
 def staticMiddlewareFactory(nextMidware):
     def middleware(req):
-        print(f"inside staticMiddlewareFactory; req.uri: {req.uri}")
         if req.uri.startswith('/static/'):
-            print("\n\n\nA static file was requested\n\n\n")
             try:
                 with open(f".{req.uri}", 'r') as f:
                     body = f.read()
@@ -43,15 +41,19 @@ def headerMiddlewareFactory(nextMidware):
         res = nextMidware(req)
         t = datetime.today()
         logTime = f"{t.year}-{t.month}-{t.day} {t.hour}:{t.minute}:{t.second}.{t.microsecond}"
+        contentType = 'text/html'
+        if req.uri.endswith('.js'):
+            contentType = 'text/javascript'
+        elif req.uri.endswith('.css'):
+            contentType = 'text/css'
 
-        res.headers = {
+        res.headers.update({
             'Connection': 'close',
             'Date': f'{logTime}',
             'Server': 'SkyNet server :o',
-            'Cache-control': 'max-age=X',
-            'Content-Length': f'{len(res.body)}'
-        }
-        if res.code == 301:
-            res.headers['Location'] = 'somewhere?'
+            'Cache-control': 'max-age=2',
+            'Content-Length': f'{len(res.body)}',
+            'Content-Type': contentType,
+        })
         return res
     return middleware

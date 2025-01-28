@@ -16,8 +16,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             if not data:
                 continue
             request = decode(data)
-            middlewareChain = loggingMiddlewareFactory(router)
+            middlewareChain = staticMiddlewareFactory(router)
             middlewareChain = headerMiddlewareFactory(middlewareChain)
-            middlewareChain = staticMiddlewareFactory(middlewareChain)
+            middlewareChain = loggingMiddlewareFactory(middlewareChain)
             responseBytes = encode(middlewareChain(req=request))
             conn.sendall(responseBytes)

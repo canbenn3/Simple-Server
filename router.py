@@ -1,4 +1,4 @@
-from endpoints import home, notFound, about, experience, projects
+from endpoints import home, notFound, about, experience, projects, redirect
 
 def router(req):
     if req.uri == '/':
@@ -9,5 +9,7 @@ def router(req):
         return experience()
     elif req.uri == '/projects':
         return projects()
+    elif req.uri == '/info':
+        return redirect()
     else:
         return notFound()

@@ -13,6 +13,7 @@ class Request:
         self.body = body
         self.headers = headers
 
+    # For debugging purposes.
     def toString(self):
         headers = f""
         for header in self.headers:

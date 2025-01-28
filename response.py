@@ -12,3 +12,9 @@ class Response:
         self.reason = reason
         self.headers = headers
         self.body = body
+
+    def toString(self):
+        headerStr = f""
+        for header in self.headers:
+            headerStr += f"{header}: {self.headers[header]}\n"
+        return f"{self.version} {self.code} {self.reason}\n{headerStr}\n{self.body}"
